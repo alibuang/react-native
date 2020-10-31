@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import { ImageBackground , StyleSheet, FlatList} from 'react-native';
+import { ImageBackground , StyleSheet, FlatList, Modal, Button} from 'react-native';
 import ItemList from './ItemList';
 import InputName from './InputName';
 
 function WelcomeBurger(props) {
 
     const [storeUser, setStoreUser]= useState([]);
+    const [isActivate, setIsActivate] = useState(false);
 
     const addPressHandler = (user) => { 
         setStoreUser(
         currentUsers => [...currentUsers, {id: Math.random().toString(),  value:user}]
         );
+        setIsActivate(false);
     }
+    const cancelPressHandler = () => setIsActivate(false);
 
     const deleteHandler = (key) => {
         setStoreUser(
@@ -27,7 +30,17 @@ function WelcomeBurger(props) {
             style={styles.background}
             source={require("../assets/burger-background.jpg")}>
 
-            <InputName addPressed={addPressHandler}/>
+            <Button title="Store User" onPress={()=> setIsActivate(true)}/>
+
+            <Modal
+                visible={isActivate}
+                animationType="slide"
+                >
+                <InputName 
+                    addPressed={addPressHandler}
+                    cancelPressed={cancelPressHandler}
+                    />
+            </Modal>    
 
             <FlatList 
                 keyExtractor={(item, index)=> item.id}
