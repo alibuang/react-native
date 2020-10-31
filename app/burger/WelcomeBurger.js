@@ -1,43 +1,44 @@
 import React, { useState } from 'react';
-import { Button, ImageBackground , StyleSheet, Text, TextInput, View} from 'react-native';
+import { ImageBackground , StyleSheet, FlatList} from 'react-native';
+import ItemList from './ItemList';
+import InputName from './InputName';
 
 function WelcomeBurger(props) {
 
-    const [user, setUser]= useState('');
     const [storeUser, setStoreUser]= useState([]);
-    const [keyDummy, setKeyDummy]= useState(0)
 
-    const textChangeHandler = (text) => setUser(text);
-    const addPressHandler = () => { 
+    const addPressHandler = (user) => { 
         setStoreUser(
-        currentUsers => [...currentUsers, user]
-    );
-        }
+        currentUsers => [...currentUsers, {id: Math.random().toString(),  value:user}]
+        );
+    }
 
+    const deleteHandler = (key) => {
+        setStoreUser(
+            currentUsers => {
+                return currentUsers.filter(user => user.id !== key)
+            }
+        );
+
+    }
 
     return (
         <ImageBackground 
             style={styles.background}
             source={require("../assets/burger-background.jpg")}>
 
-            <View style={styles.container}>
-                <TextInput 
-                    style={styles.inputUser}
-                    onChangeText={textChangeHandler}
-                    />
-                <Button 
-                    title='ADD'
-                    onPress={addPressHandler}
-                    />
-            </View>
-            <View>
-                {storeUser.map( user=>
-                    <Text 
-                    style= {styles.userStore}
-                    >{user}</Text>
-                )}
-            </View>
+            <InputName addPressed={addPressHandler}/>
 
+            <FlatList 
+                keyExtractor={(item, index)=> item.id}
+                data= {storeUser}
+                renderItem={ user => 
+                    <ItemList 
+                        id={user.item.id} 
+                        deleteTrigger={deleteHandler} 
+                        userData={user.item.value}/>
+                }
+            />
         </ImageBackground>
     );
 }
@@ -47,25 +48,6 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingTop: 50,
     },
-    container:{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginRight : 5,
-        marginLeft: 5,
-    },
-    inputUser: {
-        marginTop: 20,
-        backgroundColor: "white",
-        borderBottomWidth:1,
-        height: 70,
-        width: "80%",
-    },
-    userStore : {
-        color: "blue",
-        fontSize:30,
-        marginLeft: 5
-    }
 })
 
 export default WelcomeBurger;
